@@ -20,6 +20,9 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView tvTotalTime;
     private final Handler uiHandler = new Handler(Looper.getMainLooper());
     private boolean isUserSeeking = false;
+    private TextView tvSongTitle;
+    private TextView tvSongArtist;
+    private android.widget.ImageView ivCover;
     private final Runnable progressUpdater = new Runnable() {
         @Override
         public void run() {
@@ -37,6 +40,19 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        tvSongTitle = findViewById(R.id.tvSongTitle);
+        tvSongArtist = findViewById(R.id.tvSongArtist);
+        ivCover = findViewById(R.id.ivCover);
+
+        String title = getIntent().getStringExtra("title");
+        String artist = getIntent().getStringExtra("artist");
+        int coverResId = getIntent().getIntExtra("coverResId", R.drawable.test_cover);
+        int audioResId = getIntent().getIntExtra("audioResId", R.raw.test_track);
+
+        tvSongTitle.setText(title != null ? title : "Unknown title");
+        tvSongArtist.setText(artist != null ? artist : "Unknown artist");
+        ivCover.setImageResource(coverResId);
+
         btnPlayPause = findViewById(R.id.btnPlayPause);
         btnStop = findViewById(R.id.btnStop);
 
@@ -46,7 +62,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         player = new ExoPlayer.Builder(this).build();
 
-        MediaItem mediaItem = MediaItem.fromUri("android.resource://" + getPackageName() + "/" + R.raw.test_track);
+        MediaItem mediaItem = MediaItem.fromUri("android.resource://" + getPackageName() + "/" + audioResId);
         player.setMediaItem(mediaItem);
         player.prepare();
 

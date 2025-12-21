@@ -17,5 +17,4 @@
         android:layout_height="wrap_content"
         android:text="(Sem neskôr príde SearchView a filtrovanie skladieb)"
         android:layout_marginTop="8dp" />
-
 </LinearLayout>
