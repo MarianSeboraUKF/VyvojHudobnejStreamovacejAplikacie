@@ -11,10 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wavvy">
+        <activity android:name=".PlaylistDetailActivity" />
         <activity
             android:name=".PlayerActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -25,5 +27,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

@@ -4,9 +4,7 @@ plugins {
 
 android {
     namespace = "sk.ukf.wavvy"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "sk.ukf.wavvy"
@@ -45,4 +43,5 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.5.1")
     implementation("androidx.navigation:navigation-fragment:2.8.5")
     implementation("androidx.navigation:navigation-ui:2.8.5")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

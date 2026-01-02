@@ -23,6 +23,8 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView tvSongTitle;
     private TextView tvSongArtist;
     private android.widget.ImageView ivCover;
+    private int audioResId;
+    private boolean countedThisTrack = false;
     private final Runnable progressUpdater = new Runnable() {
         @Override
         public void run() {
@@ -47,7 +49,7 @@ public class PlayerActivity extends AppCompatActivity {
         String title = getIntent().getStringExtra("title");
         String artist = getIntent().getStringExtra("artist");
         int coverResId = getIntent().getIntExtra("coverResId", R.drawable.test_cover);
-        int audioResId = getIntent().getIntExtra("audioResId", R.raw.test_track);
+        audioResId = getIntent().getIntExtra("audioResId", R.raw.test_track);
 
         tvSongTitle.setText(title != null ? title : "Unknown title");
         tvSongArtist.setText(artist != null ? artist : "Unknown artist");
@@ -65,7 +67,6 @@ public class PlayerActivity extends AppCompatActivity {
         MediaItem mediaItem = MediaItem.fromUri("android.resource://" + getPackageName() + "/" + audioResId);
         player.setMediaItem(mediaItem);
         player.prepare();
-
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -137,9 +138,15 @@ public class PlayerActivity extends AppCompatActivity {
     private void togglePlayPause() {
         if (player == null) return;
 
-        if (player.isPlaying()) player.pause();
-        else player.play();
-
+        if (player.isPlaying()) {
+            player.pause();
+        } else {
+            player.play();
+            if (!countedThisTrack) {
+                PlayCountRepository.increment(this, audioResId);
+                countedThisTrack = true;
+            }
+        }
         updateButtonText();
     }
     private void stopPlayback() {
@@ -150,6 +157,8 @@ public class PlayerActivity extends AppCompatActivity {
 
         seekBar.setProgress(0);
         tvCurrentTime.setText("00:00");
+
+        countedThisTrack = false;
 
         updateButtonText();
     }

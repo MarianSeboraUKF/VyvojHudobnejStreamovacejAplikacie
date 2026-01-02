@@ -10,16 +10,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import sk.ukf.wavvy.R;
 import sk.ukf.wavvy.model.Song;
+
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder> {
     public interface OnSongClickListener {
         void onSongClick(Song song);
     }
-    private final List<Song> songs;
-    private final OnSongClickListener listener;
-    public SongAdapter(List<Song> songs, OnSongClickListener listener) {
-        this.songs = songs;
-        this.listener = listener;
+    public interface OnSongLongClickListener {
+        void onSongLongClick(Song song);
     }
+    private final List<Song> songs;
+    private final OnSongClickListener clickListener;
+    private final OnSongLongClickListener longClickListener;
+
+    public SongAdapter(List<Song> songs, OnSongClickListener clickListener, OnSongLongClickListener longClickListener) {
+        this.songs = songs;
+        this.clickListener = clickListener;
+        this.longClickListener = longClickListener;
+    }
+
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -36,10 +44,27 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         holder.tvArtist.setText(song.getArtist());
         holder.ivCover.setImageResource(song.getCoverResId());
 
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onSongClick(song);
+        if (holder.tvAlbum != null) {
+            String album = song.getAlbum();
+            if (album == null || album.trim().isEmpty()) {
+                holder.tvAlbum.setText("");
+                holder.tvAlbum.setVisibility(View.GONE);
+            } else {
+                holder.tvAlbum.setText(album);
+                holder.tvAlbum.setVisibility(View.VISIBLE);
             }
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) clickListener.onSongClick(song);
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onSongLongClick(song);
+                return true;
+            }
+            return false;
         });
     }
 
@@ -51,11 +76,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         ImageView ivCover;
         TextView tvTitle;
         TextView tvArtist;
+        TextView tvAlbum;
+        TextView tvPlays;
         public SongViewHolder(@NonNull View itemView) {
             super(itemView);
             ivCover = itemView.findViewById(R.id.ivItemCover);
             tvTitle = itemView.findViewById(R.id.tvItemTitle);
             tvArtist = itemView.findViewById(R.id.tvItemArtist);
+            tvAlbum = itemView.findViewById(R.id.tvItemAlbum);
         }
     }
 }
