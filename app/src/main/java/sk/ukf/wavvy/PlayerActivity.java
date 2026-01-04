@@ -230,6 +230,13 @@ public class PlayerActivity extends AppCompatActivity {
             if (requestAudioFocus()) player.play();
             else Toast.makeText(this, "Nepodarilo sa získať audio focus.", Toast.LENGTH_SHORT).show();
         }
+
+        NowPlayingRepository.saveNowPlaying(
+                this,
+                currentAudioResId,
+                activeQueue,
+                queueIndex
+        );
         updateNavButtons();
         updatePlayPauseIcon();
     }
@@ -258,7 +265,7 @@ public class PlayerActivity extends AppCompatActivity {
             abandonAudioFocus();
         } else {
             if (requestAudioFocus()) player.play();
-            else Toast.makeText(this, "Nepodarilo sa získať audio focus.", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(this, "Niečo sa nepodarilo :/", Toast.LENGTH_SHORT).show();
         }
         updatePlayPauseIcon();
     }
@@ -320,7 +327,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
     private void toggleShuffle() {
         if (originalQueue == null || originalQueue.length <= 1) {
-            Toast.makeText(this, "Shuffle nie je dostupný.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Shuffle nie je dostupný", Toast.LENGTH_SHORT).show();
             return;
         }
 

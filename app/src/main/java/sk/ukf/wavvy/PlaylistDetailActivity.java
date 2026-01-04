@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import sk.ukf.wavvy.adapter.SongAdapter;
 import sk.ukf.wavvy.model.Playlist;
 import sk.ukf.wavvy.model.Song;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class PlaylistDetailActivity extends AppCompatActivity {
     public static final String EXTRA_PLAYLIST_ID = "playlist_id";
@@ -25,6 +28,11 @@ public class PlaylistDetailActivity extends AppCompatActivity {
     private ArrayList<Song> songsInPlaylist;
     private String playlistId;
     private String playlistName = "Playlist";
+    private ConstraintLayout miniPlayer;
+    private ImageView ivMiniCover;
+    private TextView tvMiniTitle;
+    private TextView tvMiniArtist;
+    private ImageButton btnMiniPlay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,12 +62,22 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         );
         rvPlaylistSongs.setAdapter(adapter);
         loadSongs();
+
+        miniPlayer = findViewById(R.id.miniPlayer);
+        ivMiniCover = findViewById(R.id.ivMiniCover);
+        tvMiniTitle = findViewById(R.id.tvMiniTitle);
+        tvMiniArtist = findViewById(R.id.tvMiniArtist);
+        btnMiniPlay = findViewById(R.id.btnMiniPlay);
+
+        miniPlayer.setOnClickListener(v -> openPlayerFromNowPlaying());
+        btnMiniPlay.setOnClickListener(v -> openPlayerFromNowPlaying());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadSongs();
+        updateMiniPlayer();
     }
     private void showRemoveFromPlaylistDialog(Song song) {
         View card = LayoutInflater.from(this).inflate(R.layout.dialog_remove_song, null);
@@ -134,5 +152,40 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return minutes + ":" + String.format("%02d", seconds);
+    }
+    private void updateMiniPlayer() {
+        if (miniPlayer == null) return;
+
+        if (!NowPlayingRepository.hasNowPlaying(this)) {
+            miniPlayer.setVisibility(View.GONE);
+            return;
+        }
+
+        int audioResId = NowPlayingRepository.getAudioResId(this);
+        Song s = SongRepository.findByAudioResId(audioResId);
+
+        if (s == null) {
+            miniPlayer.setVisibility(View.GONE);
+            return;
+        }
+
+        miniPlayer.setVisibility(View.VISIBLE);
+        ivMiniCover.setImageResource(s.getCoverResId());
+        tvMiniTitle.setText(s.getTitle());
+        tvMiniArtist.setText(s.getArtist());
+
+        btnMiniPlay.setImageResource(R.drawable.ic_play); // zatiaľ len otvorí player
+    }
+
+    private void openPlayerFromNowPlaying() {
+        int[] q = NowPlayingRepository.getQueueIds(this);
+        int idx = NowPlayingRepository.getQueueIndex(this);
+
+        if (q == null || q.length == 0) return;
+
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, q);
+        intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, idx);
+        startActivity(intent);
     }
 }
