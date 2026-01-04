@@ -49,22 +49,7 @@ public class PlaylistDetailActivity extends AppCompatActivity {
 
         adapter = new SongAdapter(
                 songsInPlaylist,
-                song -> {
-                    int[] ids = new int[songsInPlaylist.size()];
-                    int index = 0;
-
-                    for (int pos = 0; pos < songsInPlaylist.size(); pos++) {
-                        ids[pos] = songsInPlaylist.get(pos).getAudioResId();
-                        if (songsInPlaylist.get(pos).getAudioResId() == song.getAudioResId()) {
-                            index = pos;
-                        }
-                    }
-
-                    Intent playerIntent = new Intent(PlaylistDetailActivity.this, PlayerActivity.class);
-                    playerIntent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
-                    playerIntent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
-                    startActivity(playerIntent);
-                },
+                song -> PlayerLauncher.openQueue(PlaylistDetailActivity.this, songsInPlaylist, song),
                 this::showRemoveFromPlaylistDialog
         );
         rvPlaylistSongs.setAdapter(adapter);

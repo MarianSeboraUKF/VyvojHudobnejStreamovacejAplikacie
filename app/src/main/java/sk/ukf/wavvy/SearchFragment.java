@@ -1,6 +1,5 @@
 package sk.ukf.wavvy;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -59,22 +58,7 @@ public class SearchFragment extends Fragment {
 
         adapter = new SongAdapter(
                 filteredSongs,
-                song -> {
-                    ArrayList<Song> list = filteredSongs;
-
-                    int[] ids = new int[list.size()];
-                    int index = 0;
-
-                    for (int i = 0; i < list.size(); i++) {
-                        ids[i] = list.get(i).getAudioResId();
-                        if (list.get(i).getAudioResId() == song.getAudioResId()) index = i;
-                    }
-
-                    Intent intent = new Intent(requireContext(), PlayerActivity.class);
-                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
-                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
-                    startActivity(intent);
-                },
+                song -> PlayerLauncher.openQueue(requireContext(), filteredSongs, song),
                 this::showAddToPlaylistDialog
         );
         rv.setAdapter(adapter);
@@ -133,7 +117,6 @@ public class SearchFragment extends Fragment {
             public int compare(Song a, Song b) {
                 int ca = PlayCountRepository.getCount(requireContext(), a.getAudioResId());
                 int cb = PlayCountRepository.getCount(requireContext(), b.getAudioResId());
-                // desc
                 return Integer.compare(cb, ca);
             }
         });

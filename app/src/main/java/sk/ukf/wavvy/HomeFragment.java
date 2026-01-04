@@ -1,6 +1,5 @@
 package sk.ukf.wavvy;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,22 +36,7 @@ public class HomeFragment extends Fragment {
 
         SongAdapter adapter = new SongAdapter(
                 songs,
-                song -> {
-                    ArrayList<Song> list = songs;
-
-                    int[] ids = new int[list.size()];
-                    int index = 0;
-
-                    for (int i = 0; i < list.size(); i++) {
-                        ids[i] = list.get(i).getAudioResId();
-                        if (list.get(i).getAudioResId() == song.getAudioResId()) index = i;
-                    }
-
-                    Intent intent = new Intent(requireContext(), PlayerActivity.class);
-                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
-                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
-                    startActivity(intent);
-                },
+                song -> PlayerLauncher.openQueue(requireContext(), songs, song),
                 this::showAddToPlaylistDialog
         );
         rvSongs.setAdapter(adapter);
