@@ -38,17 +38,24 @@ public class HomeFragment extends Fragment {
         SongAdapter adapter = new SongAdapter(
                 songs,
                 song -> {
+                    ArrayList<Song> list = songs;
+
+                    int[] ids = new int[list.size()];
+                    int index = 0;
+
+                    for (int i = 0; i < list.size(); i++) {
+                        ids[i] = list.get(i).getAudioResId();
+                        if (list.get(i).getAudioResId() == song.getAudioResId()) index = i;
+                    }
+
                     Intent intent = new Intent(requireContext(), PlayerActivity.class);
-                    intent.putExtra("title", song.getTitle());
-                    intent.putExtra("artist", song.getArtist());
-                    intent.putExtra("coverResId", song.getCoverResId());
-                    intent.putExtra("audioResId", song.getAudioResId());
+                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
+                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
                     startActivity(intent);
                 },
                 this::showAddToPlaylistDialog
         );
         rvSongs.setAdapter(adapter);
-
         return view;
     }
     private void showAddToPlaylistDialog(Song song) {

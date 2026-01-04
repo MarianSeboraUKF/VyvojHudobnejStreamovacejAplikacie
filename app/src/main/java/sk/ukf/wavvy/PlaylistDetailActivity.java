@@ -35,10 +35,10 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         tvPlaylistMeta = findViewById(R.id.tvPlaylistMeta);
         rvPlaylistSongs = findViewById(R.id.rvPlaylistSongs);
 
-        Intent i = getIntent();
-        playlistId = i.getStringExtra(EXTRA_PLAYLIST_ID);
+        Intent intent = getIntent();
+        playlistId = intent.getStringExtra(EXTRA_PLAYLIST_ID);
 
-        String nameFromIntent = i.getStringExtra(EXTRA_PLAYLIST_NAME);
+        String nameFromIntent = intent.getStringExtra(EXTRA_PLAYLIST_NAME);
         if (nameFromIntent != null && !nameFromIntent.trim().isEmpty()) {
             playlistName = nameFromIntent.trim();
         }
@@ -50,12 +50,20 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         adapter = new SongAdapter(
                 songsInPlaylist,
                 song -> {
-                    Intent intent = new Intent(PlaylistDetailActivity.this, PlayerActivity.class);
-                    intent.putExtra("title", song.getTitle());
-                    intent.putExtra("artist", song.getArtist());
-                    intent.putExtra("coverResId", song.getCoverResId());
-                    intent.putExtra("audioResId", song.getAudioResId());
-                    startActivity(intent);
+                    int[] ids = new int[songsInPlaylist.size()];
+                    int index = 0;
+
+                    for (int pos = 0; pos < songsInPlaylist.size(); pos++) {
+                        ids[pos] = songsInPlaylist.get(pos).getAudioResId();
+                        if (songsInPlaylist.get(pos).getAudioResId() == song.getAudioResId()) {
+                            index = pos;
+                        }
+                    }
+
+                    Intent playerIntent = new Intent(PlaylistDetailActivity.this, PlayerActivity.class);
+                    playerIntent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
+                    playerIntent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
+                    startActivity(playerIntent);
                 },
                 this::showRemoveFromPlaylistDialog
         );
@@ -114,6 +122,7 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         for (Song s : songsInPlaylist) {
             totalMs += getDurationMsFromRaw(s.getAudioResId());
         }
+
         tvPlaylistMeta.setText(songsInPlaylist.size() + " skladieb • " + formatDuration(totalMs));
         adapter.notifyDataSetChanged();
     }

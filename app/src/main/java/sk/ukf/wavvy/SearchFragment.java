@@ -60,16 +60,23 @@ public class SearchFragment extends Fragment {
         adapter = new SongAdapter(
                 filteredSongs,
                 song -> {
+                    ArrayList<Song> list = filteredSongs;
+
+                    int[] ids = new int[list.size()];
+                    int index = 0;
+
+                    for (int i = 0; i < list.size(); i++) {
+                        ids[i] = list.get(i).getAudioResId();
+                        if (list.get(i).getAudioResId() == song.getAudioResId()) index = i;
+                    }
+
                     Intent intent = new Intent(requireContext(), PlayerActivity.class);
-                    intent.putExtra("title", song.getTitle());
-                    intent.putExtra("artist", song.getArtist());
-                    intent.putExtra("coverResId", song.getCoverResId());
-                    intent.putExtra("audioResId", song.getAudioResId());
+                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
+                    intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
                     startActivity(intent);
                 },
                 this::showAddToPlaylistDialog
         );
-
         rv.setAdapter(adapter);
 
         searchView = view.findViewById(R.id.searchView);
