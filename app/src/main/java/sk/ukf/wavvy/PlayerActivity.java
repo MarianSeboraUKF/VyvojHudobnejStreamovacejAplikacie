@@ -241,20 +241,28 @@ public class PlayerActivity extends AppCompatActivity {
         updatePlayPauseIcon();
     }
     private void onTrackEnded() {
+        if (player == null) return;
+
+        // Repeat ONE: stále točíme tú istú skladbu
         if (repeatMode == RepeatMode.ONE) {
             player.seekTo(0);
             player.play();
             return;
         }
 
-        if (repeatMode == RepeatMode.OFF) {
-            stopPlayback();
-            return;
-        }
-
+        // Skús ísť na ďalšiu skladbu
         boolean moved = playNext(true);
+
+        // Ak sa nepodarilo (boli sme na konci queue)
         if (!moved) {
-            stopPlayback();
+            if (repeatMode == RepeatMode.ALL && activeQueue != null && activeQueue.length > 0) {
+                // playNext() pri ALL už vie wrapnúť, ale sem sa dostaneme len ak len 1 track
+                player.seekTo(0);
+                player.play();
+            } else {
+                // Repeat OFF (alebo queue 1 track) -> stop
+                stopPlayback();
+            }
         }
     }
     private void togglePlayPause() {
@@ -336,7 +344,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         if (shuffleEnabled) {
             activeQueue = buildShuffledQueueKeepingCurrent(originalQueue, keepAudioId);
-            queueIndex = indexOf(activeQueue, keepAudioId);
+            queueIndex = 0;
         } else {
             activeQueue = originalQueue.clone();
             queueIndex = indexOf(activeQueue, keepAudioId);
@@ -346,13 +354,41 @@ public class PlayerActivity extends AppCompatActivity {
         updatePlaybackStatusText();
     }
     private int[] buildShuffledQueueKeepingCurrent(int[] source, int currentId) {
-        List<Integer> list = new ArrayList<>();
-        for (int id : source) list.add(id);
+        if (source == null || source.length == 0) return source;
 
-        Collections.shuffle(list, new Random(System.nanoTime()));
+        // Rozdelíme: current track + zvyšok
+        ArrayList<Integer> rest = new ArrayList<>();
+        boolean foundCurrent = false;
 
+        for (int id : source) {
+            if (id == currentId && !foundCurrent) {
+                foundCurrent = true;
+            } else {
+                rest.add(id);
+            }
+        }
+
+        // Ak current track v source nebol, tak len shuffle celé
+        if (!foundCurrent) {
+            ArrayList<Integer> all = new ArrayList<>();
+            for (int id : source) all.add(id);
+            Collections.shuffle(all, new Random(System.nanoTime()));
+            int[] out = new int[all.size()];
+            for (int i = 0; i < all.size(); i++) out[i] = all.get(i);
+            return out;
+        }
+
+        // Shuffle zvyšku
+        Collections.shuffle(rest, new Random(System.nanoTime()));
+
+        // Výsledok: current ide na index 0, zvyšok za ním
         int[] out = new int[source.length];
-        for (int i = 0; i < list.size(); i++) out[i] = list.get(i);
+        out[0] = currentId;
+
+        for (int i = 0; i < rest.size(); i++) {
+            out[i + 1] = rest.get(i);
+        }
+
         return out;
     }
     private int indexOf(int[] arr, int id) {
