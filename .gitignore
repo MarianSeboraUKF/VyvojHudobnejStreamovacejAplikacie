@@ -1,15 +1,29 @@
+# Gradle
+.gradle/
+**/build/
+
+# Android Studio / IntelliJ
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Local config (never commit)
 local.properties
+
+# Native build
+.externalNativeBuild/
+.cxx/
+
+# Captures
+captures/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Optional: logs
+*.log
+
+# Ignore any gradle caches in repo folder (should not exist in repo)
+gradle/caches/
+gradle/daemon/
+gradle/wrapper/dists/
