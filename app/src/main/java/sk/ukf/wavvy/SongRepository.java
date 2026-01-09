@@ -13,6 +13,7 @@ public class SongRepository {
         cached.add(new Song("BERI 3", "RAYYY P, Vašo Patejdl, Majkyyy", "kto.som.?", R.drawable.test_cover, R.raw.test_track));
         cached.add(new Song("NEPÝTAM SA", "RAYYY P, Majkyyy", "kto.som.?", R.drawable.test_cover, R.raw.demo_track));
         cached.add(new Song("DO OČÍ", "RAYYY P, Majkyyy", "kto.som.?", R.drawable.test_cover, R.raw.prototype_track));
+        cached.add(new Song("DIG ON(A)", "Frayer Flexking, Separ", "DIG ON(A)", R.drawable.dig_ona_cover, R.raw.frayer_flexking_separ_dig_ona));
 
         return new ArrayList<>(cached);
     }

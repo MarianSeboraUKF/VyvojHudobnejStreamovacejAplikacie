@@ -22,6 +22,8 @@ public class PlayerLauncher {
         Intent intent = new Intent(ctx, PlayerActivity.class);
         intent.putExtra(PlayerActivity.EXTRA_QUEUE_AUDIO_IDS, ids);
         intent.putExtra(PlayerActivity.EXTRA_QUEUE_INDEX, index);
+        intent.putExtra(PlayerActivity.EXTRA_AUTOPLAY, true);
+        intent.putExtra(PlayerActivity.EXTRA_OPEN_EXISTING, false);
         ctx.startActivity(intent);
     }
     public static void openQueue(Context ctx, ArrayList<Song> list, Song clicked) {
