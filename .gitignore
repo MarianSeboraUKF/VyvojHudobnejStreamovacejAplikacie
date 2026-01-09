@@ -1,6 +1,8 @@
 # Gradle
 .gradle/
 **/build/
+gradle/android/
+gradle/native/
 
 # Android Studio / IntelliJ
 .idea/
