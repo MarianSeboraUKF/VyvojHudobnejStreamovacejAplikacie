@@ -20,7 +20,6 @@ import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import sk.ukf.wavvy.model.Song;
 
@@ -243,24 +242,19 @@ public class PlayerActivity extends AppCompatActivity {
     private void onTrackEnded() {
         if (player == null) return;
 
-        // Repeat ONE: stále točíme tú istú skladbu
         if (repeatMode == RepeatMode.ONE) {
             player.seekTo(0);
             player.play();
             return;
         }
 
-        // Skús ísť na ďalšiu skladbu
         boolean moved = playNext(true);
 
-        // Ak sa nepodarilo (boli sme na konci queue)
         if (!moved) {
             if (repeatMode == RepeatMode.ALL && activeQueue != null && activeQueue.length > 0) {
-                // playNext() pri ALL už vie wrapnúť, ale sem sa dostaneme len ak len 1 track
                 player.seekTo(0);
                 player.play();
             } else {
-                // Repeat OFF (alebo queue 1 track) -> stop
                 stopPlayback();
             }
         }
@@ -356,7 +350,6 @@ public class PlayerActivity extends AppCompatActivity {
     private int[] buildShuffledQueueKeepingCurrent(int[] source, int currentId) {
         if (source == null || source.length == 0) return source;
 
-        // Rozdelíme: current track + zvyšok
         ArrayList<Integer> rest = new ArrayList<>();
         boolean foundCurrent = false;
 
@@ -368,7 +361,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }
 
-        // Ak current track v source nebol, tak len shuffle celé
         if (!foundCurrent) {
             ArrayList<Integer> all = new ArrayList<>();
             for (int id : source) all.add(id);
@@ -378,10 +370,8 @@ public class PlayerActivity extends AppCompatActivity {
             return out;
         }
 
-        // Shuffle zvyšku
         Collections.shuffle(rest, new Random(System.nanoTime()));
-
-        // Výsledok: current ide na index 0, zvyšok za ním
+        
         int[] out = new int[source.length];
         out[0] = currentId;
 
