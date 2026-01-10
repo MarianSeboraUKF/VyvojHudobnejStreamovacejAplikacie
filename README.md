@@ -40,5 +40,6 @@ Wavvy
 *Wavvy Logo*
 
 <p align="center">
-  <img src="images/wavvy_poster.png" width="600">
+  <img src="images/wavvy_poster.png" width="600" style="border-radius: 12px;">
 </p>
+
